@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @default(autoincrement()) @id
+  name String?
+  phone String @unique
+  address String
+  card_num String
+  card_date String
+  cvc Int
+  basket Basket[]
+  deliveryman Deliveryman[]
+}
+
+model Category{
+  id Int @default(autoincrement()) @id
+  name String @unique
+  products Product[]
+}
+
+model Product{
+  id Int @default(autoincrement()) @id
+  name String
+  description String
+  price Int
+  categoryId Int
+  basket Basket[]
+  category Category @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Basket{
+  id Int @default(autoincrement()) @id
+  productId Int?
+  count Int? @default(1)
+  userId Int
+  order Order[]
+  user User @relation(fields: [userId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  product Product? @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Deliveryman{
+  id Int @default(autoincrement()) @id
+  cash Float @default(0)
+  userId Int
+  order Order[]
+  user User @relation(fields: [userId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+}
+
+model Order{
+  id Int @default(autoincrement()) @id
+  basketId Int
+  deliverymanId Int
+  state State
+  isDone Boolean @default(false)
+  basket Basket @relation(fields: [basketId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  deliveryman Deliveryman @relation(fields: [deliverymanId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+}
+
+enum State{
+  waiting
+  getting_ready
+  ready
+}

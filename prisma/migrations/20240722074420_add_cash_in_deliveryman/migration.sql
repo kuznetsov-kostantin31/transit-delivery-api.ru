@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Deliveryman" ADD COLUMN     "cash" DOUBLE PRECISION NOT NULL DEFAULT 0;
